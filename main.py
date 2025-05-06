@@ -3,6 +3,7 @@ from fastapi.responses import PlainTextResponse
 from fastapi.middleware.cors import CORSMiddleware
 import httpx
 import json
+from fastapi.responses import HTMLResponse
 
 app = FastAPI()
 
@@ -19,7 +20,7 @@ app.add_middleware(
 GEMINI_API_KEY = "AIzaSyChBI-7Vkw6HK21QNk_UY-67ZFBYwK-p6U"
 GEMINI_ENDPOINT = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
 
-@app.post("/")
+@app.post("/chat/")
 async def chat(request: Request):
     # Parse the user message from the incoming request
     data = await request.json()
@@ -73,3 +74,6 @@ def extract_text_from_gemini_response(json_data: str) -> str:
     except Exception as e:
         print(f"Error parsing response from Gemini API: {e}")
     return "Sorry, I couldn't understand that."
+@app.get("/chat.png")
+def serve_favicon():
+    return HTMLResponse("chat.png")
