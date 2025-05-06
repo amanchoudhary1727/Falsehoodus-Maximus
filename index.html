@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="chat.png" type="image/png">
+  <title>Falsehoodus Maximus</title>
+  <link href="https://fonts.googleapis.com/css2?family=Forum&family=Trajan+Pro:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #8B0000; /* Roman red */
+      --primary-dark: #5E0000;
+      --secondary-color: #D4AF37; /* Roman gold */
+      --accent-color: #C0C0C0; /* Silver */
+      --text-color: #2F2F2F; /* Dark gray */
+      --light-text: #5A5A5A;
+      --bg-color: #F5F5DC; /* Parchment */
+      --chat-bg: #FFFFFF;
+      --user-bubble: #8B0000;
+      --bot-bubble: #F0E6D2; /* Light parchment */
+      --code-bg: #2D3748;
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --border-color: #D4AF37;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Forum', serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(139, 0, 0, 0.05) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(212, 175, 55, 0.05) 0%, transparent 20%);
+    }
+
+    .chat-container {
+      width: 100%;
+      max-width: 1200px; /* Increased from 900px */
+      height: 100vh; /* Increased from 90vh */
+      max-height: 1200px; /* Increased from 900px */
+      background-color: var(--chat-bg);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform: translateY(20px);
+      opacity: 0;
+      animation: fadeInUp 0.5s ease-out forwards;
+      border: 2px solid var(--border-color);
+      position: relative;
+    }
+
+    .chat-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--secondary-color), var(--primary-color), var(--accent-color));
+      z-index: 10;
+    }
+
+    @keyframes fadeInUp {
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    /* Roman-style Header */
+    .chat-header {
+      background-color: var(--primary-color);
+      color: var(--secondary-color);
+      padding: 15px 24px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      position: relative;
+      border-bottom: 2px solid var(--secondary-color);
+    }
+
+    .logo-container {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      background-color: var(--secondary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .logo-placeholder {
+      width: 100%;
+      height: 100%;
+      background-color: var(--primary-color);
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--secondary-color);
+      font-family: 'Trajan Pro', serif;
+      font-size: 0.7rem;
+      text-align: center;
+      border: 1px solid var(--secondary-color);
+    }
+
+    .header-text {
+      flex: 1;
+    }
+
+    .chat-header h1 {
+      font-weight: 700;
+      font-size: 1.8rem;
+      font-family: 'Trajan Pro', serif;
+      letter-spacing: 1px;
+      margin-bottom: 2px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    }
+
+    .chat-header p {
+      font-size: 0.9rem;
+      font-style: italic;
+      opacity: 0.9;
+    }
+
+    /* Roman-style Footer */
+    .chat-footer {
+      background-color: var(--primary-color);
+      color: var(--secondary-color);
+      padding: 10px 24px;
+      text-align: center;
+      font-size: 0.8rem;
+      border-top: 2px solid var(--secondary-color);
+      font-family: 'Forum', serif;
+    }
+
+    .chat-footer a {
+      color: var(--accent-color);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .chat-footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Chat Messages */
+    .chat-messages {
+      flex: 1;
+      padding: 32px; /* Increased from 24px */
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px; /* Increased from 16px */
+      background-color: var(--chat-bg);
+      background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M30,30 L70,30 L70,70 L30,70 Z" fill="none" stroke="%23F0E6D2" stroke-width="0.5"/></svg>');
+    }
+
+    .message {
+      max-width: 90%; /* Increased from 85% */
+      padding: 18px 22px; /* Increased from 14px 18px */
+      border-radius: 8px;
+      line-height: 1.6; /* Increased from 1.5 */
+      position: relative;
+      word-wrap: break-word;
+      opacity: 0;
+      transform: translateY(10px);
+      animation: messageAppear 0.3s ease-out forwards;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      font-size: 1.05rem; /* Slightly larger font */
+    }
+
+    @keyframes messageAppear {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .user-message {
+      align-self: flex-end;
+      background-color: var(--user-bubble);
+      color: white;
+      border-bottom-right-radius: 4px;
+      animation-delay: 0.1s;
+      font-weight: 500;
+      border: 1px solid var(--primary-dark);
+    }
+
+    .bot-message {
+      align-self: flex-start;
+      background-color: var(--bot-bubble);
+      color: var(--text-color);
+      border-bottom-left-radius: 4px;
+      animation-delay: 0.1s;
+      border: 1px solid var(--secondary-color);
+    }
+
+    .message-time {
+      font-size: 0.75rem;
+      font-family: 'Forum', serif;
+      color: var(--light-text);
+      margin-top: 4px;
+      text-align: right;
+      font-style: italic;
+    }
+
+    /* Input Area */
+    .input-area {
+      padding: 16px 24px;
+      border-top: 2px solid var(--secondary-color);
+      display: flex;
+      gap: 12px;
+      background-color: var(--primary-color);
+    }
+
+    #userInput {
+      flex: 1;
+      padding: 14px 20px;
+      border: 2px solid var(--secondary-color);
+      border-radius: 8px;
+      font-family: 'Forum', serif;
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.3s;
+      background-color: var(--bot-bubble);
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    #userInput:focus {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.3);
+    }
+
+    #userInput::placeholder {
+      color: var(--light-text);
+      opacity: 0.7;
+      font-style: italic;
+    }
+
+    .send-button {
+      background-color: var(--secondary-color);
+      color: var(--primary-color);
+      border: none;
+      border-radius: 8px;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--primary-color);
+    }
+
+    .send-button:hover {
+      background-color: #E6C229;
+      transform: translateY(-2px);
+    }
+
+    .send-button:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    .send-icon {
+      width: 22px;
+      height: 22px;
+      transition: transform 0.3s;
+    }
+
+    .send-button:hover .send-icon {
+      transform: translateX(2px);
+    }
+
+    /* Typing indicator */
+    .typing-indicator {
+      display: none;
+      align-self: flex-start;
+      background-color: var(--bot-bubble);
+      padding: 12px 18px;
+      border-radius: 8px;
+      border-bottom-left-radius: 4px;
+      margin-bottom: 8px;
+      opacity: 0;
+      transform: scale(0.9);
+      transition: all 0.3s;
+      border: 1px solid var(--secondary-color);
+      font-style: italic;
+    }
+
+    .typing-indicator.visible {
+      display: flex;
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .typing-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--primary-color);
+      border-radius: 50%;
+      animation: typingAnimation 1.4s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(1) { animation-delay: 0s; }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typingAnimation {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-4px); }
+    }
+
+    /* Roman decorative elements */
+    .terminal-line {
+      font-family: 'Forum', serif;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .prompt {
+      color: var(--primary-color);
+      font-weight: bold;
+    }
+
+    /* Scrollbar styling */
+    .chat-messages::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .chat-messages::-webkit-scrollbar-track {
+      background: rgba(212, 175, 55, 0.1);
+      border-radius: 4px;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb {
+      background: var(--secondary-color);
+      border-radius: 4px;
+      transition: background 0.3s;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb:hover {
+      background: var(--primary-color);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .chat-container {
+        height: 100vh;
+        max-height: none;
+        border-radius: 0;
+        border: none;
+      }
+      
+      .message {
+        max-width: 90%;
+      }
+
+      .chat-header h1 {
+        font-size: 1.4rem;
+      }
+      
+      .logo-container {
+        width: 40px;
+        height: 40px;
+      }
+    }
+.message-time{
+  color:black;
+}
+.message-time2{
+  color:white;
+  font-size: 0.75rem;
+  font-family: 'Forum', serif;
+  margin-top: 4px;
+  text-align: right;
+  font-style: italic;
+  opacity:0.5;
+}  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <!-- Roman-style Header -->
+    <div class="chat-header">
+      <div class="logo-container">
+        <img src="chat.png" alt="Falsehoodus Maximus Logo" style="width:100%;height:100%;object-fit:contain;">
+      </div>
+      <div class="header-text">
+        <h1>FALSEHOODUS MAXIMUS</h1>
+        <p>Caesar's trusted purveyor of false intelligence</p>
+      </div>
+    </div>
+    
+    <div class="chat-messages" id="messages">
+      <div class="typing-indicator" id="typingIndicator">
+        <span style="margin-right:8px;">Deciphering scrolls...</span>
+        <div class="typing-dots">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="> Ask your question, citizen..." onkeydown="checkEnter(event)">
+      <button class="send-button" onclick="sendMessage()">
+        <svg class="send-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Roman-style Footer -->
+  
+    <div class="chat-footer">
+      Powered by <a href="https://ai.google.dev/" target="_blank">Gemini API</a> • All intelligence reports are deliberately falsified • SPQR MMXXIII
+      <br>
+      <span style="display: inline-flex; align-items: center; gap: 4px; margin-top: 4px;">
+        <a href="https://www.instagram.com/lord.carbin" target="_blank" style="display: inline-flex; align-items: center; gap: 4px; text-decoration: none; color: var(--secondary-color);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+          </svg>
+          @lord.carbin
+        </a>
+      </span>
+      <div style="font-size: 0.9rem; font-style: italic; opacity: 1 a; text-align:left;">
+        🚨 Disclaimer: Pure Nonsense Ahead 🚨<br>
+        "Falsehoodus Maximus" is a satire/humor project. Everything generated or stated by this bot (or on this page) is intentionally false, misleading, or nonsensical—and absolutely not to be taken as fact, advice, or truth of any kind.
+        This content is for entertainment purposes only. Use your judgment, don't believe a word of it, and please don't cite this page on your thesis, legal filings, or anything important.
+        By viewing or interacting with this content, you agree to suspend reality and enjoy the chaos. If that's not your thing, you've been warned.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Function to get current time in HH:MM format
+    function getCurrentTime() {
+      const now = new Date();
+      return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    // Function to send the message to the backend and update the chat
+    function sendMessage() {
+      const input = document.getElementById('userInput');
+      const message = input.value.trim();
+      const messages = document.getElementById('messages');
+      
+      if (message !== '') {
+        // Add the user's message to the chat
+        const time = getCurrentTime();
+        messages.innerHTML += `
+          <div class="message user-message">
+            ${message}
+            <div class="message-time2">${time}</div>
+          </div>
+        `;
+        
+        // Show typing indicator with animation
+        const typingIndicator = document.getElementById('typingIndicator');
+        typingIndicator.style.display = 'flex';
+        setTimeout(() => {
+          typingIndicator.classList.add('visible');
+        }, 10);
+        
+        // Clear the input field
+        input.value = '';
+        
+        // Scroll to the bottom of the chat
+        messages.scrollTop = messages.scrollHeight;
+        
+        // Send the message to the FastAPI backend
+        fetch('http://127.0.0.1:8000/chat/', {  // Replace with your FastAPI server URL
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: message })
+        })
+        .then(res => res.text())
+        .then(data => {
+          // Hide typing indicator with animation
+          typingIndicator.classList.remove('visible');
+          setTimeout(() => {
+            typingIndicator.style.display = 'none';
+          }, 300);
+          
+          // Add the chatbot's response to the chat
+          const responseTime = getCurrentTime();
+          messages.innerHTML += `
+            <div class="message bot-message">
+              <div class="terminal-line">
+                <span class="prompt">></span>
+                <span class="command">${message}</span>
+              </div>
+              <div class="terminal-line">
+                <span class="response">${data}</span>
+              </div>
+              <div class="message-time">${responseTime}</div>
+            </div>
+          `;
+          
+          // Scroll to the bottom of the chat
+          messages.scrollTop = messages.scrollHeight;
+        })
+        .catch(error => {
+          typingIndicator.classList.remove('visible');
+          typingIndicator.style.display = 'none';
+          console.error('Error:', error);
+        });
+      }
+    }
+
+    // Allow sending messages when Enter is pressed
+    function checkEnter(event) {
+      if (event.key === 'Enter') {
+        sendMessage();
+      }
+    }
+
+    // Initial greeting from the bot
+    window.onload = function() {
+      setTimeout(() => {
+        const messages = document.getElementById('messages');
+        const time = getCurrentTime();
+        messages.innerHTML += `
+          <div class="message bot-message">
+            <div class="terminal-line">
+              <span class="prompt">></span>
+              <span class="command">salve</span>
+            </div>
+            <div class="terminal-line">
+              <span class="response">Ave, citizen! I am Falsehoodus Maximus, decurion of disinformation.</span>
+            </div>
+            <div class="terminal-line">
+              <span class="response">Ask and you shall receive... patently false answers!</span>
+            </div>
+            <div class="terminal-line">
+              <span class="response">By order of Caesar, all responses are guaranteed inaccurate.</span>
+            </div>
+            <div class="message-time">${time}</div>
+          </div>
+        `;
+      }, 500);
+    };
+  </script>
+</body>
+</html>
