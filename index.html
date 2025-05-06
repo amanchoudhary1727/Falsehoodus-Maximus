@@ -458,125 +458,117 @@
       </div>
     </div>
   </div>
+<script>
+  // Function to get current time in HH:MM format
+  function getCurrentTime() {
+    const now = new Date();
+    return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
 
-  <script>
-    // Function to get current time in HH:MM format
-    function getCurrentTime() {
-      const now = new Date();
-      return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
+  // Function to send the message to the backend and update the chat
+  function sendMessage() {
+    const input = document.getElementById('userInput');
+    const message = input.value.trim();
+    const messages = document.getElementById('messages');
 
-    // Function to send the message to the backend and update the chat
-    function sendMessage() {
-      const input = document.getElementById('userInput');
-      const message = input.value.trim();
-      const messages = document.getElementById('messages');
-      
-      if (message !== '') {
-        // Add the user's message to the chat
-        const time = getCurrentTime();
-        messages.innerHTML += `
-          <div class="message user-message">
-            ${message}
-            <div class="message-time2">${time}</div>
-          </div>
-        `;
-        
-        // Show typing indicator with animation
-        const typingIndicator = document.getElementById('typingIndicator');
-        typingIndicator.style.display = 'flex';
-        setTimeout(() => {
-          typingIndicator.classList.add('visible');
-        }, 10);
-        
-        // Clear the input field
-        input.value = '';
-        
-        // Scroll to the bottom of the chat
-        messages.scrollTop = messages.scrollHeight;
-        
-        // Send the message to the FastAPI backend
-fetch('https://falsehoodus-maximus.onrender.com/chat/', {  // Replace with your deployed FastAPI URL
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({ message: message })
-})
-.then(response => response.json())  // Convert response to JSON
-.then(data => {
-  console.log(data);  // Handle the response from the server
-})
-.catch(error => {
-  console.error('Error:', error);  // Handle any errors
-});
+    if (message !== '') {
+      // Add the user's message to the chat
+      const time = getCurrentTime();
+      messages.innerHTML += `
+        <div class="message user-message">
+          ${message}
+          <div class="message-time2">${time}</div>
+        </div>
+      `;
 
-        .then(res => res.text())
-        .then(data => {
-          // Hide typing indicator with animation
-          typingIndicator.classList.remove('visible');
-          setTimeout(() => {
-            typingIndicator.style.display = 'none';
-          }, 300);
-          
-          // Add the chatbot's response to the chat
-          const responseTime = getCurrentTime();
-          messages.innerHTML += `
-            <div class="message bot-message">
-              <div class="terminal-line">
-                <span class="prompt">></span>
-                <span class="command">${message}</span>
-              </div>
-              <div class="terminal-line">
-                <span class="response">${data}</span>
-              </div>
-              <div class="message-time">${responseTime}</div>
-            </div>
-          `;
-          
-          // Scroll to the bottom of the chat
-          messages.scrollTop = messages.scrollHeight;
-        })
-        .catch(error => {
-          typingIndicator.classList.remove('visible');
-          typingIndicator.style.display = 'none';
-          console.error('Error:', error);
-        });
-      }
-    }
-
-    // Allow sending messages when Enter is pressed
-    function checkEnter(event) {
-      if (event.key === 'Enter') {
-        sendMessage();
-      }
-    }
-
-    // Initial greeting from the bot
-    window.onload = function() {
+      // Show typing indicator with animation
+      const typingIndicator = document.getElementById('typingIndicator');
+      typingIndicator.style.display = 'flex';
       setTimeout(() => {
-        const messages = document.getElementById('messages');
-        const time = getCurrentTime();
+        typingIndicator.classList.add('visible');
+      }, 10);
+
+      // Clear the input field
+      input.value = '';
+
+      // Scroll to the bottom of the chat
+      messages.scrollTop = messages.scrollHeight;
+
+      // Send the message to the FastAPI backend
+      fetch('https://falsehoodus-maximus.onrender.com/chat/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message: message })
+      })
+      .then(response => response.text()) // or .json() if backend returns JSON
+      .then(data => {
+        // Hide typing indicator with animation
+        typingIndicator.classList.remove('visible');
+        setTimeout(() => {
+          typingIndicator.style.display = 'none';
+        }, 300);
+
+        // Add the chatbot's response to the chat
+        const responseTime = getCurrentTime();
         messages.innerHTML += `
           <div class="message bot-message">
             <div class="terminal-line">
               <span class="prompt">></span>
-              <span class="command">salve</span>
+              <span class="command">${message}</span>
             </div>
             <div class="terminal-line">
-              <span class="response">Ave, citizen! I am Falsehoodus Maximus, decurion of disinformation.</span>
+              <span class="response">${data}</span>
             </div>
-            <div class="terminal-line">
-              <span class="response">Ask and you shall receive... patently false answers!</span>
-            </div>
-            <div class="terminal-line">
-              <span class="response">By order of Caesar, all responses are guaranteed inaccurate.</span>
-            </div>
-            <div class="message-time">${time}</div>
+            <div class="message-time">${responseTime}</div>
           </div>
         `;
-      }, 500);
-    };
-  </script>
+
+        // Scroll to the bottom of the chat
+        messages.scrollTop = messages.scrollHeight;
+      })
+      .catch(error => {
+        typingIndicator.classList.remove('visible');
+        typingIndicator.style.display = 'none';
+        console.error('Error:', error);
+      });
+    }
+  }
+
+  // Allow sending messages when Enter is pressed
+  function checkEnter(event) {
+    if (event.key === 'Enter') {
+      sendMessage();
+    }
+  }
+
+  // Initial greeting from the bot
+  window.onload = function() {
+    setTimeout(() => {
+      const messages = document.getElementById('messages');
+      const time = getCurrentTime();
+      messages.innerHTML += `
+        <div class="message bot-message">
+          <div class="terminal-line">
+            <span class="prompt">></span>
+            <span class="command">salve</span>
+          </div>
+          <div class="terminal-line">
+            <span class="response">Ave, citizen! I am Falsehoodus Maximus, decurion of disinformation.</span>
+          </div>
+          <div class="terminal-line">
+            <span class="response">Ask and you shall receive... patently false answers!</span>
+          </div>
+          <div class="terminal-line">
+            <span class="response">By order of Caesar, all responses are guaranteed inaccurate.</span>
+          </div>
+          <div class="message-time">${time}</div>
+        </div>
+      `;
+    }, 500);
+  };
+</script>
+
 </body>
 </html>
