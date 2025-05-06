@@ -3,7 +3,7 @@ from fastapi.responses import PlainTextResponse
 from fastapi.middleware.cors import CORSMiddleware
 import httpx
 import json
-from fastapi.responses import HTMLResponse
+from fastapi.responses import FileResponse
 
 app = FastAPI()
 
@@ -76,4 +76,4 @@ def extract_text_from_gemini_response(json_data: str) -> str:
     return "Sorry, I couldn't understand that."
 @app.get("/chat.png")
 def serve_favicon():
-    return HTMLResponse("chat.png")
+    return FileResponse("chat.png")
