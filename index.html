@@ -496,11 +496,21 @@
         messages.scrollTop = messages.scrollHeight;
         
         // Send the message to the FastAPI backend
-        fetch('http://127.0.0.1:8000/chat/', {  // Replace with your FastAPI server URL
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: message })
-        })
+fetch('https://falsehoodus-maximus.onrender.com/chat/', {  // Replace with your deployed FastAPI URL
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({ message: message })
+})
+.then(response => response.json())  // Convert response to JSON
+.then(data => {
+  console.log(data);  // Handle the response from the server
+})
+.catch(error => {
+  console.error('Error:', error);  // Handle any errors
+});
+
         .then(res => res.text())
         .then(data => {
           // Hide typing indicator with animation
