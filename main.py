@@ -23,7 +23,7 @@ GEMINI_ENDPOINT = f"https://generativelanguage.googleapis.com/v1beta/models/gemi
 def serve_home():
     return FileResponse("index.html")
 
-@app.post("/chat/")
+@app.get("/chat/")
 async def chat(request: Request):
     # Parse the user message from the incoming request
     data = await request.json()
